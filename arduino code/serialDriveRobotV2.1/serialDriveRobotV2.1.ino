@@ -259,8 +259,7 @@ void updateOdometry() {
 }
 
 void updateRobot() {
-  //robot is oriented towards negative x axis.  Motion is calculated relative to that,
-  //i.e., forward is -x direction, CW rotation is towards + y axis
+  //IMU is oriented towards negative -x axis.  Motion is corrected so that x motion is fowards
   //Orientation is relative to magnetic north with CW positive angle
   float radius;
   float newTheta;

@@ -212,11 +212,11 @@ void loop() {
 //    Serial1.print(" ");
 //    Serial1.print(wheels.arc_right_dot);
     Serial1.print(" ");
-    Serial1.print(odometry.mag_x);
+    Serial1.print(odometry.mag_x,4);
     Serial1.print(" ");
-    Serial1.print(odometry.mag_y);
+    Serial1.print(odometry.mag_y,4);
     Serial1.print(" ");
-    Serial1.print(odometry.theta_dot); //leave this in for troubleshooting on controller side
+    Serial1.print(odometry.theta_dot,4); //leave this in for troubleshooting on controller side
 //    Serial1.print(" ");
 //    Serial1.print(odometry.d2xdt2);
 //    Serial1.print(" ");
@@ -264,7 +264,7 @@ void updateOdometry() {
 }
 
 void updateRobot() {
-  //IMU is oriented towards negative -x axis.  Motion is corrected so that x motion is fowards
+  //IMU is oriented towards negative -x axis.  Motion is corrected so that y motion is foward
   //Orientation is relative to magnetic north with CW positive angle
   float radius;
   float newTheta;
@@ -274,12 +274,13 @@ void updateRobot() {
   float s = sin(dTheta/2);
   float c = cos(dTheta/2);
   if (denom == 0) {
-    robot.x = wheels.arc_left;
+    robot.y = wheels.arc_left;
+    robot.x = 0;
   } else {
     //changed to just displacements, delta x, between callbacks
       radius = AXLE_LEN*num/denom;
-      robot.y =  2*radius*s*s; 
-      robot.x =  2*radius*s*c;
+      robot.x =  -2*radius*s*s; 
+      robot.y =  2*radius*s*c;
   }
   robot.theta_mag = calcHeading(odometry.mag_x,odometry.mag_y); //new heading from compass
   newTheta = robot.theta - dTheta*180/PI;

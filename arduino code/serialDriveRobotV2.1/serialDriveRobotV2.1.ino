@@ -126,13 +126,13 @@ void setup() {
   // initialize the wheels states
   wheels.arc_left = 0;
   wheels.arc_right = 0;
-  wheels.arc_left_dot = 0;
-  wheels.arc_right_dot = 0;
+//  wheels.arc_left_dot = 0;
+//  wheels.arc_right_dot = 0;
 
   //initialize odometry
   updateOdometry();
 
-  //initialize the robot state
+  //initialize the robot state to zero with heading determined by magnetometer
   robot.theta_mag = calcHeading(odometry.mag_x,odometry.mag_y);
   robot.theta = robot.theta_mag;
   robot.x = 0.0;
@@ -172,52 +172,55 @@ void loop() {
     
     
     start_time = curr_time;
-    Serial.println();
-    Serial.print("Left wheel distance = ");
-    Serial.print(wheels.arc_left);
-    Serial.print("; right wheel distance = ");
-    Serial.print(wheels.arc_right);
-    Serial.print("; mag_x = ");
-    Serial.print(odometry.mag_x);
-    Serial.print("; mag_y = ");
-    Serial.println(odometry.mag_y);
-    Serial.print("angular velocity = ");
-    Serial.print(odometry.theta_dot);
-    Serial.print("; accel(x) = ");
-    Serial.print(odometry.d2xdt2);
-    Serial.print("; accel(y) = ");
-    Serial.print(odometry.d2ydt2);
-    Serial.println();
-    Serial.print("robot.x= ");
-    Serial.print(robot.x);
-    Serial.print("; robot.y = ");
-    Serial.print(robot.y);
-    Serial.print("; heading(mag) = ");
-    Serial.print(robot.theta_mag);
-    Serial.print("; heading(calc) = ");
-    Serial.println(robot.theta);
-
-    
+//    Serial.println();
+//    Serial.print("Left wheel distance = ");
+//    Serial.print(wheels.arc_left);
+//    Serial.print("; right wheel distance = ");
+//    Serial.print(wheels.arc_right);
+//    Serial.print("; mag_x = ");
+//    Serial.print(odometry.mag_x);
+//    Serial.print("; mag_y = ");
+//    Serial.println(odometry.mag_y);
+//    Serial.print("angular velocity = ");
+//    Serial.print(odometry.theta_dot);
+//    Serial.print("; accel(x) = ");
+//    Serial.print(odometry.d2xdt2);
+//    Serial.print("; accel(y) = ");
+//    Serial.print(odometry.d2ydt2);
+//    Serial.println();
+//    Serial.print("robot.x= ");
+//    Serial.print(robot.x);
+//    Serial.print("; robot.y = ");
+//    Serial.print(robot.y);
+//    Serial.print("; heading(mag) = ");
+//    Serial.print(robot.theta_mag);
+//    Serial.print("; heading(calc) = ");
+//    Serial.println(robot.theta);
 
     //odometry string to the controller
+    //TODO: update to just provide robot.x robot.y, robot.heading, robot_heading_mag
     Serial1.print("[ ");
-    Serial1.print(wheels.arc_left);
+    Serial1.print(robot.x,4);
     Serial1.print(" ");
-    Serial1.print(wheels.arc_right);
+    Serial1.print(robot.y,6);
     Serial1.print(" ");
-    Serial1.print(wheels.arc_left_dot);
+    Serial1.print(robot.theta);
     Serial1.print(" ");
-    Serial1.print(wheels.arc_right_dot);
+    Serial1.print(robot.theta_mag);
+//    Serial1.print(" ");
+//    Serial1.print(wheels.arc_left_dot);
+//    Serial1.print(" ");
+//    Serial1.print(wheels.arc_right_dot);
     Serial1.print(" ");
     Serial1.print(odometry.mag_x);
     Serial1.print(" ");
     Serial1.print(odometry.mag_y);
     Serial1.print(" ");
-    Serial1.print(odometry.theta_dot);
-    Serial1.print(" ");
-    Serial1.print(odometry.d2xdt2);
-    Serial1.print(" ");
-    Serial1.print(odometry.d2ydt2);
+    Serial1.print(odometry.theta_dot); //leave this in for troubleshooting on controller side
+//    Serial1.print(" ");
+//    Serial1.print(odometry.d2xdt2);
+//    Serial1.print(" ");
+//    Serial1.print(odometry.d2ydt2);
     Serial1.print(" ]\n");
     Serial1.flush();
 
@@ -245,8 +248,8 @@ void updateState() {
 
   wheels.arc_left = delta_left_ticks * MM_PER_TICK;//distance traveled by left wheel
   wheels.arc_right = delta_right_ticks * MM_PER_TICK; //distance traveled by right wheel
-  wheels.arc_left_dot = wheels.arc_left / (LOOPTIME * 1000);
-  wheels.arc_right_dot = wheels.arc_right / (LOOPTIME * 1000);
+//  wheels.arc_left_dot = wheels.arc_left / (LOOPTIME * 1000);
+//  wheels.arc_right_dot = wheels.arc_right / (LOOPTIME * 1000);
 }
 
 void updateOdometry() {
@@ -271,13 +274,12 @@ void updateRobot() {
   float s = sin(dTheta/2);
   float c = cos(dTheta/2);
   if (denom == 0) {
-    robot.x = robot.x + wheels.arc_left;
+    robot.x = wheels.arc_left;
   } else {
-    //will chabnge this to just displacements between loop measurements
-    //controller will compute state relative to world coordinates
+    //changed to just displacements, delta x, between callbacks
       radius = AXLE_LEN*num/denom;
-      robot.y = robot.y + 2*radius*s*s; 
-      robot.x = robot.x + 2*radius*s*c;
+      robot.y =  2*radius*s*s; 
+      robot.x =  2*radius*s*c;
   }
   robot.theta_mag = calcHeading(odometry.mag_x,odometry.mag_y); //new heading from compass
   newTheta = robot.theta - dTheta*180/PI;

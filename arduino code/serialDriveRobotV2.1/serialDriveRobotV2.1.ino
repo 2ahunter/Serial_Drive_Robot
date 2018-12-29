@@ -91,6 +91,8 @@ int v_right;
 
 
 void setup() {
+  pinMode(LSENSOR, INPUT_PULLUP); //interrupt pins, want pullup mode enabled
+  pinMode(RSENSOR, INPUT_PULLUP);
   Serial1.begin(57600);  //XBee/UART1/pins 0 and 1
   Serial1.setTimeout(1000);
   Serial.begin(9600);   //USB

@@ -264,7 +264,7 @@ void updateOdometry() {
 }
 
 void updateRobot() {
-  //IMU is oriented towards negative -x axis.  Motion is corrected so that y motion is foward
+  //IMU is oriented towards negative -x axis.  Motion is corrected so that x motion is foward
   //Orientation is relative to magnetic north with CW positive angle
   float radius;
   float newTheta;
@@ -274,13 +274,14 @@ void updateRobot() {
   float s = sin(dTheta/2);
   float c = cos(dTheta/2);
   if (denom == 0) {
-    robot.y = wheels.arc_left;
-    robot.x = 0;
+    robot.x = wheels.arc_left;
+    robot.y = 0;
   } else {
     //changed to just displacements, delta x, between callbacks
       radius = AXLE_LEN*num/denom;
-      robot.x =  -2*radius*s*s; 
-      robot.y =  2*radius*s*c;
+      robot.x = 2*radius*s*c;
+      robot.y = 2*radius*s*s; 
+
   }
   robot.theta_mag = calcHeading(odometry.mag_x,odometry.mag_y); //new heading from compass
   newTheta = robot.theta - dTheta*180/PI;
@@ -290,7 +291,7 @@ void updateRobot() {
   if (newTheta < 0) {
     newTheta = newTheta + 360;
   }
-  robot.theta = newTheta; //update the calculated heading from odometry
+  robot.theta = dTheta; //update the calculated heading from odometry
 
 }
 

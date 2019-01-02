@@ -161,11 +161,11 @@ void loop() {
 //      Serial.print("; v_right: ");
 //      Serial.println(v_right);
     }
-    //get rid of any other spurious data but print it first
-    while (Serial1.available() > 0) {
-      char junk = Serial1.read();
-      //Serial.print(junk);
-    }
+//    //get rid of any other spurious data but print it first
+//    while (Serial1.available() > 0) {
+//      char junk = Serial1.read();
+//      //Serial.print(junk);
+//    }
     updateState();
     updateOdometry();
     updateRobot();

@@ -88,6 +88,10 @@ struct robotState {
 //controller inputs:
 int v_left;
 int v_right;
+//Serial1 delimeters:
+char myChar = 'A';
+char left_bracket[1] = "[";
+char right_bracket[1] = "]";
 
 
 void setup() {
@@ -148,28 +152,31 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+
   //check loop timer
   curr_time = millis();
-
-  if (curr_time - start_time >= LOOPTIME) {
-    //Check for latest controller command
-    if (Serial1.available() > 0 ) {
+  //check for controller command
+  if (Serial1.available() > 0 ) {
+//    if(Serial1.findUntil(left_bracket,right_bracket)){
       v_left = Serial1.parseInt();
       v_right = Serial1.parseInt();
-//      Serial.print("v_left: ");
-//      Serial.print(v_left);
-//      Serial.print("; v_right: ");
-//      Serial.println(v_right);
-    }
-//    //get rid of any other spurious data but print it first
-//    while (Serial1.available() > 0) {
-//      char junk = Serial1.read();
-//      //Serial.print(junk);
+      Serial.print("v_left: ");
+      Serial.print(v_left);
+      Serial.print("; v_right: ");
+      Serial.println(v_right);
 //    }
+
+    }
+    //get rid of any other spurious data but print it first
+    while (Serial1.available() > 0) {
+      char junk = Serial1.read();
+      //Serial.print(junk);
+    }  
+
+  if (curr_time - start_time >= LOOPTIME) {
     updateState();
     updateOdometry();
     updateRobot();
-    
     
     start_time = curr_time;
 //    Serial.println();

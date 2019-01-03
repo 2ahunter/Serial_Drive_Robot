@@ -66,12 +66,12 @@ class Robot(object):
         orient.handlers = {'odoRX': self.compareHeading, 
                            'enter': self.on_orient_enter,
                            'exit':self.on_exit}
-        off.handlers = {'enter': self.on_enter,'exit': self.end_mission}
+        off.handlers = {'enter': self.offState_on_enter,'exit': self.end_mission}
         
         # Attach enter/exit handlers
         states = [init,error]
         for state in states:
-            state.handlers = {'enter': self.on_enter, 'exit': self.on_exit}
+            state.handlers = {'enter': self.offState_on_enter, 'exit': self.on_exit}
 
         robot.initialize()
         return robot 
@@ -83,22 +83,27 @@ class Robot(object):
         
     def on_enter(self,state,event):
         print('entry to {0}'.format(state.name))
-        self.drive(0,0)
         
     def on_exit(self,state,event):
         print('exit from {0}'.format(state.name))
-        self.drive(0,0)
         
     def on_orient_enter(self,state,event):
         print('entry to {0}'.format(state.name))
         self.drive(-50,50)
         
+    def offState_on_enter(self,state,event):
+        print('entry to {0}'.format(state.name))
+        self.drive(0,0)
+        
     def compareHeading(self,state,event):
         tol = math.radians(10)
         desired_heading = self.orientation
         current_heading = self.X[2]
+#        print('current_heading: {0}'.format(current_heading))
+#        print('desired_heading: {0}'.format(desired_heading))
         if (current_heading > desired_heading - tol) and (current_heading < desired_heading + tol):
             self.sm.dispatch(Event('oriented'))
+            
     def end_mission(self,state,event):
         print('exit from {0}'.format(state.name))
         self.drive(0,0)
@@ -106,16 +111,14 @@ class Robot(object):
         
     #module functions    
     def drive(self,u_l,u_r):
+        print('driving')
         v = (int(u_l),int(u_r))
         commandStr = '{0[0]:d},{0[1]:d}\n'.format(v)
-        self.sio.write(commandStr)
-        self.ser.flush()
-        self.sio.write(commandStr)
-        self.ser.flush()
+        bytes_written = self.sio.write(commandStr)
+        self.sio.flush()
         print(commandStr)
-        print(command)
-
-
+        print('bytes written: {0}'.format(bytes_written))
+        #TODO add acknowledge
         
     def getOdometry(self):
         '''odometry string is [ dx dy dTheta Heading mag_x mag_y dTheta_gyro ] '''

@@ -16,17 +16,13 @@ sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser),encoding='ascii')
 
 def drive(u_l,u_r):
     v = (int(u_l),int(u_r))
-    commandStr = '{0[0]:d},{0[1]:d}\n'.format(v)
+    commandStr = '[{0[0]:d},{0[1]:d}]\n'.format(v)
 #        commandStr = '-50,50 \n'
 #        command = bytes(commandStr, 'ascii')
  #   sio.flush()
  #   ser.reset_output_buffer()
     sio.write(commandStr)
     sio.flush()
-    ser.reset_output_buffer()
     sio.write(commandStr)
     sio.flush()
-    sio.write(commandStr)
-    sio.flush()
-    print(commandStr)
 

@@ -90,6 +90,9 @@ class Robot(object):
     def on_orient_enter(self,state,event):
         print('entry to {0}'.format(state.name))
         self.drive(-50,50)
+        heading = math.radians(360 - self.odo[3])
+        heading = self.normalizeYaw(heading)
+        self.X[2] = heading
         
     def offState_on_enter(self,state,event):
         print('entry to {0}'.format(state.name))
@@ -99,8 +102,8 @@ class Robot(object):
         tol = math.radians(10)
         desired_heading = self.orientation
         current_heading = self.X[2]
-#        print('current_heading: {0}'.format(current_heading))
-#        print('desired_heading: {0}'.format(desired_heading))
+        print('current_heading: {0}'.format(current_heading))
+        print('desired_heading: {0}'.format(desired_heading))
         if (current_heading > desired_heading - tol) and (current_heading < desired_heading + tol):
             self.sm.dispatch(Event('oriented'))
             

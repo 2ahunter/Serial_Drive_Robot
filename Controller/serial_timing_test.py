@@ -13,7 +13,7 @@ import numpy as np
 
 dev = "/dev/cu.usbserial-DA01233R"
 baudRate = 56700
-ser = serial.Serial(dev,baudRate,timeout=.10) #open serial port
+ser = serial.Serial(dev,baudRate,timeout=.1) #open serial port
 sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
 
 tests = 100
@@ -30,8 +30,9 @@ def drive(u_l,u_r):
     ser.reset_output_buffer()
     sio.write(commandStr)
     sio.flush()
-    s = sio.readline()
-    print (s[:-1])
+#    s = sio.readline()
+    s = readln()
+    print (s)
     
 def getOdometry():
     '''odometry string is [ dx dy dTheta Heading mag_x mag_y dTheta_gyro ] '''
@@ -39,8 +40,18 @@ def getOdometry():
     ser.reset_output_buffer()
     sio.write(commandStr)
     sio.flush()
-    s = sio.readline()
+ #   s = ser.readline()
+    s = readln()
     print (s[:-1])
+    
+def readln():
+    response = []
+    char = ser.read()
+    while (char != b'\n'):
+        response.append(char.decode())
+        char = ser.read()
+    response = ''.join(response)
+    return response
 
 
 for i in range(tests):
@@ -57,5 +68,6 @@ for i in range(tests):
 
 drive(0,0)
 ser.close()
-print('min response time: {0}, max time: {1}, mean time: {2}'.format(min(times),max(times),np.average(times)))
+print('min response time: {0}, max time: {1}, mean time: {2}, stdev {3}'
+      .format(min(times),max(times),np.average(times),np.std(times)))
     

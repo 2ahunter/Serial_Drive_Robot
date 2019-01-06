@@ -260,7 +260,7 @@ void writeOdometry(){
     Serial1.print("[ ");
     Serial1.print(robot.x,3);
     Serial1.print(" ");
-    Serial1.print(robot.y,5);
+    Serial1.print(robot.y,3);
     Serial1.print(" ");
     Serial1.print(robot.theta,3);
     Serial1.print(" ");

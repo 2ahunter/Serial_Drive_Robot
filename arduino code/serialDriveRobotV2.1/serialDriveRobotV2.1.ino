@@ -94,6 +94,8 @@ char left_bracket[1] = "[";
 char right_bracket[1] = "]";
 
 
+
+
 void setup() {
   pinMode(LSENSOR, INPUT_PULLUP); //interrupt pins, want pullup mode enabled
   pinMode(RSENSOR, INPUT_PULLUP);
